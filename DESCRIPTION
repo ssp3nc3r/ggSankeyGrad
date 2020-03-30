@@ -1,0 +1,16 @@
+Package: ggSankeyGrad
+Type: Package
+Title: ggplot-based Sankey Graphic with Gradient Flows
+Version: 0.0.1
+Author: Scott Spencer
+Maintainer: Scott Spencer <spencer.sa@gmail.com>
+Description: More about what it does (maybe more than one line)
+    Use four spaces when indenting paragraphs within the Description.
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+Imports:
+    dplyr,
+    magrittr,
+    ggplot2,
+    bezier
