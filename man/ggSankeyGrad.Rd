@@ -17,7 +17,7 @@ ggSankeyGrad(c1, c2, col1 = "gray", col2 = "gray", values,
 \item{lwidth}{Width of vertical lines that create the flows.}
 }
 \description{
-Returns ggplot object of sankey flow graphic.
+ssSankeyGrad returns a ggplot object encoding the flow between beginning and ending categorical data, i.e., a sankey diagram, wherein each flow is encoded as a color gradient. Those color gradients transition between a user-specified color for each category. The parameters are constructed such that c1, c2, col1, col2, and values are all vectors of the same length and corresponding positions represent one flow between categories. The categories c1, c2 are vectors of type character string, col1, col2 are vectors of type character string and include either named colors or hexidecimal representations of color, and values are of an integer or numeric type that encode the amount of "flow" between each category.
 }
 \examples{
 # Example 1 with made up data
