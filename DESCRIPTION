@@ -1,11 +1,10 @@
 Package: ggSankeyGrad
 Type: Package
-Title: ggplot-based Sankey Graphic with Gradient Flows
+Title: A ggplot-based Sankey Graphic with Gradient Flows
 Version: 0.0.1
 Author: Scott Spencer
 Maintainer: Scott Spencer <spencer.sa@gmail.com>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Description: ggSankeyGrad builds a ggplot object for visualizing sankey graphics, in which each flow is represented as a color gradient. The user specifies beginning and ending categories and corresponding colors for each category. The ggplot object returned encodes the transition between categories as color-gradient transitions.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
