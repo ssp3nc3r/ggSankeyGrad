@@ -5,13 +5,8 @@
 #
 
 
-ggSankeyGrad <- function(c1, c2,
-                           col1 = "gray", col2 = "gray",
-                           values,
-                           padding = 2,
-                           alpha = 0.4,
-                           label = FALSE,
-                           lwidth= 0.5) {
+ggSankeyGrad <- function(c1, c2, col1 = "gray", col2 = "gray",
+values,padding = 2,alpha = 0.4,label = FALSE,lwidth= 0.5) {
 
   stopifnot(requireNamespace("dplyr"))
   stopifnot(requireNamespace("ggplot2"))
