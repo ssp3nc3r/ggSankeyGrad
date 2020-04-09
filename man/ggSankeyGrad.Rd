@@ -1,9 +1,10 @@
 \name{ggSankeyGrad}
 \alias{ggSankeyGrad}
-\title{ggplot Sankey with gradient flows}
+\title{ggplot Sankey with color gradient within flows}
 \usage{
 ggSankeyGrad(c1, c2, col1 = "gray", col2 = "gray", values,
-             padding = 2, alpha = 0.4, label = FALSE, lwidth= 0.5)
+padding = 2, alpha = 0.4, label = FALSE, label_color = TRUE,
+label_fontface = 'bold', label_size = 10, color_steps = 100)
 }
 \arguments{
 \item{c1}{Categories that begin each flow.}
@@ -14,10 +15,15 @@ ggSankeyGrad(c1, c2, col1 = "gray", col2 = "gray", values,
 \item{padding}{Space between categories.}
 \item{alpha}{Transparency of each flow.}
 \item{label}{Whether to include category labels.}
-\item{lwidth}{Width of vertical lines that create the flows.}
+\item{label_fontface}{Font face used for the labels.}
+\item{label_color}{Font color used for the labels.}
+\item{label_size}{Point size used for the labels.}
+\item{color_steps}{The number of colors used between the beginning and end of the flow.}
 }
 \description{
 ssSankeyGrad returns a ggplot object encoding the flow between beginning and ending categorical data, i.e., a sankey diagram, wherein each flow is encoded as a color gradient. Those color gradients transition between a user-specified color for each category. The parameters are constructed such that c1, c2, col1, col2, and values are all vectors of the same length and corresponding positions represent one flow between categories. The categories c1, c2 are vectors of type character string, col1, col2 are vectors of type character string and include either named colors or hexidecimal representations of color, and values are of an integer or numeric type that encode the amount of "flow" between each category.
+
+The parameter padding adds space between flow categories. color_steps specifies the number of transition colors between categories within each flow. Finally, if label is TRUE, then parameters label_fontface, label_size, and label_color enable label customization.
 }
 \examples{
 # Example 1 with made up data

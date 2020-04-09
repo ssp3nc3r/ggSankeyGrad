@@ -1,15 +1,16 @@
 # gg_sankey_grad
 #
-# This is an example function named 'hello'
-# which prints 'Hello, world!'.
+#
+#
 #
 
-
 ggSankeyGrad <- function(c1, c2, col1 = "gray", col2 = "gray",
-values,padding = 2,alpha = 0.4,label = FALSE,lwidth= 0.5) {
+values, padding = 2, alpha = 0.4, label = FALSE, label_color = TRUE, label_fontface = 'bold', label_size = 10, color_steps = 100) {
 
+  stopifnot(requireNamespace("tidyr"))
   stopifnot(requireNamespace("dplyr"))
   stopifnot(requireNamespace("ggplot2"))
+
   df <- data.frame(c1, c2, values)
 
   # calculate beginning bottom and top of flow ribbons
@@ -47,7 +48,7 @@ values,padding = 2,alpha = 0.4,label = FALSE,lwidth= 0.5) {
   d <- d %>% mutate(cat = as.integer(as.factor(paste0(c1, c2))))
 
   # x value for each vertical line
-  x <- seq(0, 1, length = 1000)
+  x <- seq(0, 1, length = color_steps + 1)
 
   # calculate bottom and top y value for each line
   bez <- data.frame()
@@ -70,19 +71,42 @@ values,padding = 2,alpha = 0.4,label = FALSE,lwidth= 0.5) {
                                 stringsAsFactors = FALSE) )
   }
 
+  # create four x, y points for each polygon
+  b1 <- bez %>%
+    group_by(cat) %>%
+    mutate(x1 = x,
+           x2 = lead(x),
+           x3 = lead(x),
+           x4 = x,
+           geom_n = paste0(cat, ".", row_number())) %>%
+    pivot_longer(cols = c(x1, x2, x3, x4), names_to = "x_name", values_to = "x_path")
+
+  b2 <- bez %>%
+    group_by(cat) %>%
+    mutate(y1 = bez_t,
+           y2 = lead(bez_t),
+           y3 = lead(bez_b),
+           y4 = bez_b) %>%
+    pivot_longer(cols = c(y1, y2, y3, y4), names_to = "y_name", values_to = "y_path")
+
+  b1 <- bind_cols(b1, b2[,"y_path"])
+  # b1 <- b1[complete.cases(b1),]
+
   # create base plot with lines
   pl <- ggplot() +
     scale_x_continuous(limits = c(-0.2, 1.2)) +
-    geom_segment(data = bez,
-                 aes(x = x, xend = x,
-                     y = bez_b, yend = bez_t),
-                 color = bez$col,
-                 size = lwidth,
+
+    geom_polygon(data = b1,
+                 aes(x = x_path,
+                     y = y_path,
+                     group = geom_n),
+                 color = NA,
+                 fill = b1$col,
+                 size = 0,
                  alpha = alpha)
 
   # add labels for beginning (left) and ending (right) categories
   if(label == T) {
-
     loc <- d %>%
       group_by(c1) %>%
       slice(n()) %>%
@@ -93,7 +117,8 @@ values,padding = 2,alpha = 0.4,label = FALSE,lwidth= 0.5) {
     for(i in seq(nrow(loc))) {
       pl <- pl + annotate('text', x = -0.01, y = loc$y[i],
                           label = as.character(loc$c1[i]),
-                          hjust = 1, size = 10/.pt)
+                          fontface = label_fontface,
+                          hjust = 1, size = label_size/.pt, color = ifelse(label_color, loc$col1[i], '#000000') )
     }
 
     loc <- d %>%
@@ -107,7 +132,8 @@ values,padding = 2,alpha = 0.4,label = FALSE,lwidth= 0.5) {
     for(i in seq(nrow(loc))) {
       pl <- pl + annotate('text', x = 1.01, y = loc$y[i],
                           label = as.character(loc$c2[i]),
-                          hjust = 0, size = 10/.pt)
+                          fontface = label_fontface,
+                          hjust = 0, size = label_size/.pt, color = ifelse(label_color, loc$col2[i], '#000000') )
     }
 
 
@@ -119,3 +145,4 @@ values,padding = 2,alpha = 0.4,label = FALSE,lwidth= 0.5) {
   # return ggplot object
   return(pl)
 }
+
