@@ -28,7 +28,7 @@ ggSankeyGrad(c1, c2, col1, col2, values, label = TRUE)
 
 which results in the following diagram:
 
-![Example Sankey diagram](figures/example1.png)
+![Example Sankey diagram](man/figures/example1.png)
 
 Let's consider a second example. This data is inspired by Giorgia Lupi's award-winning infographic, [Nobels, No Degrees](https://www.informationisbeautifulawards.com/showcase/204-nobels-no-degrees). We prepare the data in the same format as before,
 
@@ -79,6 +79,6 @@ with(d5, ggSankeyGrad(c1 = Category,
 
 which encodes the categories of Nobel winners and from which of several schools they are associated, if any.
 
-![Sankey flow encoding association between Nobel prize winners and which of several Universities they are associated with.](figures/nobelnodegrees.png).
+![Sankey flow encoding association between Nobel prize winners and which of several Universities they are associated with.](man/figures/nobelnodegrees.png).
 
 
