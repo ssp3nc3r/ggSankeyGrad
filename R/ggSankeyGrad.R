@@ -5,11 +5,10 @@
 #
 
 ggSankeyGrad <- function(
-    c1, c2, col1 = "gray", col2 = "gray", values,
+    c1, c2, col1, col2, values,
     padding = 2, alpha = 0.4,
     label = FALSE, label_color = TRUE,
-    label_fontface = 'bold', label_size = 10,
-    color_steps = 100) {
+    label_fontface = 'bold', label_size = 10) {
 
   stopifnot(requireNamespace("tidyr"))
   stopifnot(requireNamespace("dplyr"))
@@ -55,9 +54,9 @@ ggSankeyGrad <- function(
   d <- d |> mutate(cat = as.integer(factor(paste0(c1, c2), levels = paste0(c1, c2)) ) )
 
   # x value for each vertical line
-  x <- seq(0, 1, length = color_steps + 1)
+  x <- seq(0, 1, length = 101)
 
-  # calculate bottom and top y value for each line
+  # calculate bottom and top y value along bezier
   bez <- data.frame()
   for(i in seq(nrow(d))) {
     bot <- with(d[i,],
@@ -66,16 +65,13 @@ ggSankeyGrad <- function(
     top <- with(d[i,],
                 matrix(c(0,t1, 1,t1, 3,t2, 4,t2),
                        nrow = 4, ncol = 2, byrow = TRUE))
-    col <- with(d[i,],
-                colorRampPalette(c(as.character(col1),
-                                   as.character(col2)))( length(x) ))
     bez <- bind_rows(bez,
-                     data.frame(cat = i,
-                                x = x,
-                                col = col,
-                                bez_b = bezier::bezier(t = x, p = bot)[,2],
-                                bez_t = bezier::bezier(t = x, p = top)[,2],
-                                stringsAsFactors = FALSE) )
+      data.frame(cat = i,
+        x = x,
+        bez_b = bezier::bezier(t = x, p = bot)[,2],
+        bez_t = bezier::bezier(t = x, p = top)[,2],
+        stringsAsFactors = FALSE)
+      )
   }
 
   # create base plot with lines
