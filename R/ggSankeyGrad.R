@@ -17,36 +17,35 @@ ggSankeyGrad <- function(
 
   stopifnot(packageVersion("ggplot2") >= 3.5 )
 
-  df <- data.frame(c1, c2, values)
+
 
   # calculate beginning bottom and top of flow ribbons
-  d1 <- df |>
-    group_by(c1, c2) |>
-    summarise(lengths = sum(values)) |>
-    ungroup() |>
-    mutate(b1 = lag(cumsum(lengths +
-                             ifelse(row_number() < n() &
-                                      c1 == lead(c1),
-                                    0, padding )))) |>
-    mutate(b1 = ifelse(is.na(b1), 0, b1)) |>
-    mutate(t1 = b1 + lengths) |>
-    select(-lengths)
+  d1 <- data.frame(c1,
+                   values) |>
+    mutate(p = ifelse(c1 == lag(c1) | is.na(lag(c1)),0,padding)) |>
+    mutate(csp = cumsum(p)) |>
+    mutate(csv = cumsum(values)) |>
+    mutate(t1 = csp + csv) |>
+    mutate(b1 = t1 - values) |>
+    select(c1,b1,t1)
 
   # calculate ending bottom and top of flow ribbons
-  d2 <- df |>
-    group_by(c2, c1) |>
-    summarise(lengths = sum(values)) |>
-    ungroup() |>
-    mutate(b2 = lag(cumsum(lengths +
-                             ifelse(row_number() < n() &
-                                      c2 == lead(c2),
-                                    0, padding )))) |>
-    mutate(b2 = ifelse(is.na(b2), 0, b2)) |>
-    mutate(t2 = b2 + lengths) |>
-    select(-lengths)
+  d2 <- data.frame(c2 ,
+                   values) |>
+    mutate(row = row_number()) |>
+    arrange(factor(c2, levels = unique(c(c1,c2)))) |>
+    mutate(p = ifelse(c2 == lag(c2) | is.na(lag(c2)),0,padding)) |>
+    mutate(csp = cumsum(p)) |>
+    mutate(csv = cumsum(values)) |>
+    mutate(t2 = csp + csv) |>
+    mutate(b2 = t2 - values) |>
+    arrange(row) |>
+    select(c2,b2,t2)
+
+
 
   # combine calculations with beginning and ending colors for each flow
-  d <- left_join(d1, d2, by = c("c1", "c2"))
+  d <- bind_cols(d1, d2)
   d$col1 <- col1
   d$col2 <- col2
 
@@ -74,6 +73,8 @@ ggSankeyGrad <- function(
       )
   }
 
+  bez <- bez |> filter(!is.na(bez_b))
+
   # create base plot with lines
   pl <- ggplot(data = bez) +
     scale_x_continuous(limits = c(-0.2, 1.2))
@@ -95,12 +96,13 @@ ggSankeyGrad <- function(
 
   # add labels for beginning (left) and ending (right) categories
   if(label == TRUE) {
+
     loc <- d |>
       group_by(c1) |>
-      slice(n()) |>
+      summarise(y = 0.5*max(t1) + 0.5*min(b1),
+                col1 = col1[t1 == max(t1)]) |>
       ungroup() |>
-      mutate(y = ifelse(row_number() == 1, t1/2 ,
-                        (t1 + lag(t1) + padding)/2) )
+      filter(!is.na(y))
 
     for(i in seq(nrow(loc))) {
       pl <- pl + annotate('text', x = -0.01, y = loc$y[i],
@@ -111,10 +113,10 @@ ggSankeyGrad <- function(
 
     loc <- d |>
       group_by(c2) |>
-      slice(n()) |>
+      summarise(y = 0.5*max(t2) + 0.5*min(b2),
+                col2 = col2[t2 == max(t2)]) |>
       ungroup() |>
-      mutate(y = ifelse(row_number() == 1, t2/2 ,
-                        (t2 + lag(t2) + padding)/2) )
+      filter(!is.na(y))
 
 
     for(i in seq(nrow(loc))) {
