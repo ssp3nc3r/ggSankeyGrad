@@ -15,7 +15,7 @@ ggSankeyGrad <- function(
   stopifnot(requireNamespace("ggplot2"))
   stopifnot(requireNamespace("grid"))
 
-  stopifnot(packageVersion("ggplot2") >= 3.5 )
+  stopifnot(packageVersion("ggplot2") >= '3.5' )
 
   df <- data.frame(c1, c2, values)
 
